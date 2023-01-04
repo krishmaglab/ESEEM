@@ -11,20 +11,31 @@ offset=[-3.5,-2.3,-1.2,0,1.2,2.3,3.5]; % in mT
 
 
 %%% creation of random numbers %%%%
+%%%% XX1 will used to randomise the hyperfine, XX2 will be used for dipole-dipole %%%%%
 Nn=7;
-realisation=10; %the final result is outcome of 10 different proton configuration
-num_dd=Nn*(Nn-1)/2;
-A=[1 -1 1 -1 1 -1 1]; B=[-1 1 -1 1 -1 1 -1]; % A random choice of +1 and -1 of my choice
-plusmin=[A;B;A;B;A;B;A;B;A;B];
+realisation=10; %the final result is outcome of 10 different proton configurations, 
+num_dd=Nn*(Nn-1)/2; % nC2 problem
+A=[1 -1 1 -1 1 -1 1]; B=[-1 1 -1 1 -1 1 -1]; % a choice of +1 and -1 , will be used to randomise the hyperfime 
+plusmin=zeros(realisation, Nn);
+
+for i=1:realisation
+    if mod(i,2)==1
+    plusmin (i,:)=A,
+    else
+    plusmin (i,:)=B;
+    end
+end
+
 plusmin=plusmin';
 
 for i=1:realisation
     XX1(:,i) = rand(Nn,1).*plusmin(:,i);
-    XX2(:,i) = pi*rand(num_dd,1);
+    %%% XX1(:,i) = 2*rand(Nn,1)-1; %% should also do the job
+    XX2(:,i) = pi*rand(num_dd,1); % random angle from 0 to pi, will be used for proton proton dipolar intearctions
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-STEP=100;
+STEP=1000; % number of time steps, later will be used during time evolution
 for delB=1:length(offset)
   
 Signal=zeros(1,STEP);
@@ -32,10 +43,7 @@ Signal_sz=zeros(1,STEP);
 
 tic
 
-for RR=1:1:realisation  %%%%% this loop is not in use
-
-
-
+for RR=1:1:realisation  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 temperature=5; %in K
@@ -100,14 +108,13 @@ Magfield=shift+detuning; % in mT;
                 H1=   D*(Iz(:,:,1)*Iz(:,:,1) - Identity*S*(S+1)/2) + E*(Ix(:,:,1)*Ix(:,:,1)-Iy(:,:,1)*Iy(:,:,1)); %electron anisotropy
              
                 % e-n hyperfine intearction
-                hp=4;  % in MHz, experimentally also we have seen similar value
+                hp=4;  % in MHz
                
                 for i=1:Nn
-                   %A(i)=(1+ (i-(Nn+1)/2)/24)*hp;  % this way I can make hyperfine linearly space from 7 to 9 MHz 
-                   A(i)=hp+XX1(i, RR);
+                    A(i)=hp+XX1(i, RR);  % to make hyperfine randmosed within the limit of  hp +-1 
                 end
                 
-                 %%%in general, psedusecular ternm is maller than secular tern, I kept it 1:2 ratio 
+                 %%%in general, psedusecular ternm is maller than secular tern, we keep a 1:2 ratio 
            
                 Hhp=zeros(length(H0), length(H0));
                 for i=1:Nn
@@ -121,10 +128,10 @@ Magfield=shift+detuning; % in mT;
                 %%%%%%%%%% dipolar hamiltonian  %%% %%%%%%%%%%%%%%%%
                 Hj=zeros(length(H0), length(H0));
                 test=1;
-                dip=0.010;% dipolar coupling, MHz, 10 KHz proton-proton interaction is resonable 
+                dip=0.010;% dipolar coupling, MHz, 10 KHz proton-proton interaction is resonable, and it has kept fixed for all pair of proton
                 num_dd=Nn*(Nn-1)/2;
                 for i=1:num_dd
-                     dd(i)=-dip * (3*cos(XX2(i,RR))^2 -1);
+                     dd(i)=-dip * (3*cos(XX2(i,RR))^2 -1);  %%% only theta is randomised, thus making d-d interaction random
                 end
                 
                 for k=1:Nn-1
@@ -142,7 +149,7 @@ Magfield=shift+detuning; % in mT;
              
             
               %%%%%%%%%%%%%%%%%%%
-              % diagonalisation for fun, not required for ESEEM
+              % diagonalisation for fun, not required for ESEEM, as calculation is performed in the lab frame
              % [V, Hd] = eig(H);
               %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -157,7 +164,7 @@ Magfield=shift+detuning; % in mT;
                  
                     Sz1=0.5*(Ix(:,:,1)*Iy(:,:,1)+Iy(:,:,1)*Ix(:,:,1)); %The pulse propagator in +1 -1 subspace
                     Sz1D=Sz1;
-              % some propagator that need NOT to be calculated for each tau
+              % some propagators that need NOT to be calculated for each tau
               
                     Pulse = expm(-1i*(pi/2)*Sz1D); % 90 degree pulse
                     Dens1 = Pulse*(rho_eq)*Pulse';  % forming the density matrix after 90 degree pulse   
@@ -191,9 +198,7 @@ Magfield=shift+detuning; % in mT;
             
 end
 
-%%%%% signal processing and plotting only on Sz1D, and that is not our observable, so this part is not much relavant
-%%%%%% But, I kept this part,  as this gives only osciilation, no expo decay, so dirrectly I can do FFFT
-%%%%%% signal procecceing on the actual obserbavle, Sz, will be done by the other program
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
