@@ -1,5 +1,5 @@
 clear all
-last=50;  % Upto what time I want to fit to streached exponential, 50 us is used in paper
+last=100;  % Upto what time I want to fit to streached exponential, 100 us is used in paper
 
 load 'ESEEM_results.mat' %%%% I save the whole worksapce of the eseem program in this name
 [val, index]= min( abs( data11(:,1) - last));
@@ -23,7 +23,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-npoints=10240; % 10240 was used in paper
+npoints=10240; % 10240 points
 S= x(2)-x(1); % time spacing  
 
 expo=f(x); 
@@ -38,7 +38,7 @@ for i=1:length(x)
 fun(i)=exp(-x(i)*EPO);
 end
 
-Ap=0;win=1;
+Ap=1;win=0; % for a comparison of use of apodiation versus a proper windowing function in the FFT
 
 if Ap==1
 y=y.*fun'; % Apodisaiton
