@@ -1,7 +1,7 @@
 clear all
-last=100;  % Upto what time I want to fit to streached exponential, 100 us is used in paper
+last=100;  % how much of the time trace will be considered for the fit to streached exponential, 100 us for example
 
-load 'ESEEM_results.mat' %%%% I save the whole worksapce of the eseem program in this name
+load 'ESEEM_results.mat' %%%% the saved worksapce of the "ESEEM_easyspin1e_7p.m" 
 [val, index]= min( abs( data11(:,1) - last));
 
 %%%%% fitting to streched ecponential %%%%%%
@@ -38,7 +38,7 @@ for i=1:length(x)
 fun(i)=exp(-x(i)*EPO);
 end
 
-Ap=1;win=0; % for a comparison of use of apodiation versus a proper windowing function in the FFT
+Ap=1;win=0; % for a comparison of the use of apodiation versus a proper windowing function in the FFT
 
 if Ap==1
 y=y.*fun'; % Apodisaiton
@@ -89,6 +89,6 @@ xlim([.1 5])
 xlabel('Frequency(MHz)') 
 ylabel('Relative Intensity(Arb Unit)') 
 spectra_final=spectra_final';
-%%%%% For plot I want to take the frequency axis start from 0, that why it starts from (npoints+1)/2
+%%%%% For ploting, it is desirable to plot the frequency axis start from 0, that is why it starts from (npoints+1)/2
 data22(:,1)=freq((npoints+1)/2:1:npoints); data22(:,2)=spectra_final((npoints+1)/2:1:npoints); 
 
