@@ -1,11 +1,7 @@
 clear all
 clc
 dummy=1;
-
-offset=[0,1,2,3,5,10,15,20,25,30,50,100,200]; % in mT
 offset=[20];
-
-
 
 for delB=1:length(offset)
 %%
@@ -135,11 +131,6 @@ Magfield=shift+detuning; % in mT;
             
 end
 
-%%%%% signal processing and plotting only on Sz1D, and that is not our observable, so this part is not much relavant
-%%%%%% But, I kept this part,  as this gives only osciilation, no expo decay, so dirrectly I can do FFFT
-%%%%%% signal procecceing on the actual obserbavle, Sz, will be done by the other program
-
-
 
             Signal_sz=Signal_sz-(sum(Signal_sz)/length(Signal_sz));
 %             figure(200)
@@ -195,48 +186,4 @@ clearvars -except data1 data11 data2 dummy delB colour wn A dd D E STEP jump hp 
 toc
 end
 
-tt=1;
-
-
-% 
-% END=15;  % in us
-% [val, index]= min( abs( data11(:,1) - END));
-% for i=2
-%   x=data11(1:index,1);
-%   y=data11(1:index,i);
-%   %plot(x,y)
-% 
-% myfittype = fittype('a*exp(-(x/T)^b)+c', 'dependent',{'y'},'independent',{'x'},'coefficients',{'a','b','c', 'T'});
-% [f] = fit(x,y,myfittype,'StartPoint', [.024, 3, .005, 8.6]);
-% disp (f);
-% figure (1000)
-% plot(f,x,y,'*')
-% end
-% npoints=10000;
-% S= x(2)-x(1);   
-% 
-% expo=f(x); 
-% y=y-expo;
-% y=y-(sum(y(end-4:end))/5);
-% 
-% EPO=.00; 
-% for i=1:length(x)
-% fun(i)=exp(-x(i)*EPO);
-% end
-% y=y.*fun; % Apodisaiton
-% 
-% figure (1001)
-% plot (x,y)
-% 
-% 
-% spectra_final=abs(fftshift(fft(y, npoints))); %%%magnitude 
-% freq =(1/S).*(-npoints/2:npoints/2-1)./npoints; % creating frequency axis
-% figure(1002)
-% hold on
-% plot ( freq, abs(spectra_final));
-% xlim([0 5])
-% %ylim([0 3.5])
-% xlabel('Frequency(MHz)') 
-% ylabel('Relative Intensity(Arb Unit)') 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
